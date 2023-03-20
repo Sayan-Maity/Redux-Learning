@@ -1,10 +1,10 @@
-
-
 const redux = require('redux')
 const createStore = redux.createStore
+const bindActionCreators = redux.bindActionCreators
+
 
 const ORDER_PIZZA = 'ORDER_PIZZA'
-const CAKE_RESTOCKED = 'CAKE_RESTOCKED'
+const PIZZAS_RESTOCKED = 'PIZZAS_RESTOCKED'
 
 // action
 function orderPizza() {
@@ -17,9 +17,9 @@ function orderPizza() {
 // here I am taking input (by default its 1 but it can be given anything)
 // instead of quantity use the term 'payload'
 // in redux its the convention to use the term payload if you want to send any additional information
-function restockCake(qty = 1) {
+function restockPizza(qty = 1) {
     return {
-        type : CAKE_RESTOCKED,
+        type : PIZZAS_RESTOCKED,
         quantity : qty
     }
 }
@@ -28,7 +28,7 @@ function restockCake(qty = 1) {
 
 // reducer
 const initialState = {
-    numOfCakes : 10
+    numOfPizzas : 10
 }
 
 const reducer = (state = initialState, action) => {
@@ -36,12 +36,12 @@ const reducer = (state = initialState, action) => {
         case ORDER_PIZZA :
              return {
                 ...state,
-                numOfCakes : state.numOfCakes - 1
+                numOfPizzas : state.numOfPizzas - 1
             }
-        case CAKE_RESTOCKED :
+        case PIZZAS_RESTOCKED :
              return {
                 ...state,
-                numOfCakes : state.numOfCakes + action.quantity
+                numOfPizzas : state.numOfPizzas + action.quantity
             }
 
         default :
@@ -57,11 +57,25 @@ console.log('initial state', store.getState())
 
 const unsubscribe = store.subscribe(() => console.log('final state', store.getState()))
 
-store.dispatch(orderPizza())
-store.dispatch(orderPizza())
-store.dispatch(orderPizza())
-// here we are passing additional information
-store.dispatch(restockCake(4))
+// (a) Either we can write like this (mostly used):
+// store.dispatch(orderPizza())
+// store.dispatch(orderPizza())
+// store.dispatch(orderPizza())
+// // here we are passing additional information
+// store.dispatch(restockPizza(4))
+
+
+
+// (b) Or we can write like this (not really necessary but good to know):
+const actions = bindActionCreators({orderPizza, restockPizza}, store.dispatch)
+actions.orderPizza()
+actions.orderPizza()
+actions.orderPizza()
+actions.restockPizza(4)
+
 
 
 unsubscribe()
+
+
+
